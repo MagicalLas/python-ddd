@@ -5,6 +5,8 @@ from dataclasses import dataclass
 from enum import Enum, auto
 from typing import Optional, List
 
+from domain.rental_list import RentalList
+
 
 class Category(Enum):
     HISTORY = auto
@@ -26,12 +28,35 @@ class Code(object):
         self.number = int(raw_code.split(":")[1])
         self.book_category = Category.get_category_from_str(raw_code.split(":")[0])
 
+    def __str__(self):
+        return f"{self.book_category}:{self.number}"
+
 
 class Book(object):
-    def __init__(self, title: str, book_code: Code, rental_list_id: int):
+    def __init__(self, title: str, book_code: Code, rental_list: RentalList):
         self._title = title
         self._code = book_code
-        self._rental_list_id = rental_list_id
+        self._rental_list = rental_list
+
+    @staticmethod
+    def create(title: str, book_code: Code) -> Book:
+        return Book(title, book_code, RentalList.create())
+
+    @property
+    def code(self) -> str:
+        return str(self._code)
+
+    @property
+    def title(self) -> str:
+        return self._title
+
+    @property
+    def rental_list(self) -> List[str]:
+        return [record.user_id for record in self._rental_list.records]
+
+    @property
+    def id(self):
+        return self.code
 
 
 class BookRepository(object):
