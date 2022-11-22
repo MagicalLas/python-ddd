@@ -1,5 +1,4 @@
-from bookmanagement.domain.book import BookRepository, Book, Code
-from bookmanagement.domain.rental_list import RentalList
+from domain.book import BookRepository, Book, Code
 
 
 class BookManagementUseCase(object):
@@ -7,6 +6,9 @@ class BookManagementUseCase(object):
         self._book_repository = book_repository
 
     def create_new_book(self, title: str, raw_code: str):
-        rental_list = RentalList()
-        book = Book(title, Code(raw_code), [])
-        self._book_repository
+        book = Book.create(title, Code(raw_code))
+        self._book_repository.save(book)
+
+    def find_book_from_title(self, title: str):
+        books = self._book_repository.find_by_title(title)
+        return books
